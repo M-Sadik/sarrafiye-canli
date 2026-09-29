@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sarrafiye Canlı</title>
+<meta name="description" content="Altınkaynak, Hakan Altın ve Harem Altın sarrafiye fiyatları yan yana, 5 saniyede bir güncellenir.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: kuyumcu vitrini — koyu yeşil kadife tepsi, pirinç rakamlar; ürün satırları × üç dövizci sütunu */
+:root {
+  --bg: #eef1ec;
+  --panel: #ffffff;
+  --panel-2: #f5f7f3;
+  --ink: #16241d;
+  --muted: #5d6d64;
+  --line: #d8dfd6;
+  --brass: #8a6512;
+  --brass-soft: #f3ead2;
+  --up: #1d7a44;
+  --up-bg: #dcf1e3;
+  --down: #b3261e;
+  --down-bg: #f8dfdc;
+  --best: #0f5132;
+  --best-bg: #d4ecdd;
+  --font-display: "Bodoni Moda", "Didot", Georgia, serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-num: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1a14; --panel: #12241b; --panel-2: #0f1f17; --ink: #e9efe9; --muted: #93a79b;
+    --line: #22382c; --brass: #d9b25a; --brass-soft: #2a2717; --up: #5fd08e; --up-bg: #133423;
+    --down: #ff8a80; --down-bg: #3a1a18; --best: #8ee6b1; --best-bg: #174230; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1a14; --panel: #12241b; --panel-2: #0f1f17; --ink: #e9efe9; --muted: #93a79b;
+  --line: #22382c; --brass: #d9b25a; --brass-soft: #2a2717; --up: #5fd08e; --up-bg: #133423;
+  --down: #ff8a80; --down-bg: #3a1a18; --best: #8ee6b1; --best-bg: #174230; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 15px/1.45 var(--font-body);
+  padding-inline: 16px; padding-block: 20px 40px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 18px; }
+
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+h1 {
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 6vw, 46px);
+  line-height: 1; margin: 0; letter-spacing: -0.01em; text-wrap: balance;
+}
+h1 em { font-style: italic; font-weight: 500; color: var(--brass); }
+.sub { color: var(--muted); margin: 6px 0 0; font-size: 14px; }
+
+.pulse { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ring { width: 22px; height: 22px; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 3; }
+.ring .track { stroke: var(--line); }
+.ring .bar { stroke: var(--brass); stroke-linecap: round; stroke-dasharray: 56.55; transition: stroke-dashoffset 0.2s linear; }
+
+.sources { display: flex; flex-wrap: wrap; gap: 8px; }
+.name, .cell { min-width: 0; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px;
+  background: var(--panel); border: 1px solid var(--line); font-size: 13px; color: var(--ink); text-decoration: none;
+}
+.chip:hover { border-color: var(--brass); }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.chip.ok .dot { background: var(--up); box-shadow: 0 0 0 3px var(--up-bg); }
+.chip.bad .dot { background: var(--down); box-shadow: 0 0 0 3px var(--down-bg); }
+.chip small { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+.seg { display: inline-flex; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.seg button {
+  font: 500 13px var(--font-body); color: var(--muted); background: transparent; border: 0;
+  padding: 6px 12px; border-radius: 7px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.seg button:focus-visible, .chip:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.legend { font-size: 12px; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 10px; height: 10px; border-radius: 3px; background: var(--best-bg); border: 1px solid var(--best); }
+
+.board { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.row { display: grid; grid-template-columns: minmax(150px, 1.25fr) repeat(3, minmax(0, 1fr)); align-items: stretch; }
+.row + .row { border-top: 1px solid var(--line); }
+.head { background: var(--panel-2); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.head > div { padding: 10px 14px; }
+.head .src { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.head .src b { grid-column: 1 / -1; font: 600 13px var(--font-body); color: var(--ink); text-transform: none; letter-spacing: 0; }
+.head .src span { text-align: right; }
+.group { background: var(--brass-soft); color: var(--brass); font: 600 12px var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 14px; border-top: 1px solid var(--line); }
+.name { padding: 12px 14px; display: flex; flex-direction: column; justify-content: center; }
+.name b { font: 600 16px var(--font-display); }
+.name small { color: var(--muted); font-size: 12px; }
+.cell { padding: 8px 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: center; border-left: 1px solid var(--line); }
+.cell .lbl { display: none; }
+.px {
+  font: 400 14px var(--font-num); font-variant-numeric: tabular-nums; text-align: right;
+  padding: 3px 6px; border-radius: 6px; transition: background-color 1.2s ease, color 1.2s ease; white-space: nowrap;
+}
+.px.sat { font-weight: 600; }
+.px.best { background: var(--best-bg); color: var(--best); }
+.px.flash-up { background: var(--up-bg); color: var(--up); transition: none; }
+.px.flash-down { background: var(--down-bg); color: var(--down); transition: none; }
+.px .arr { font-size: 9px; margin-right: 2px; vertical-align: 1px; }
+.na { color: var(--muted); text-align: right; font-size: 13px; grid-column: 1 / -1; }
+
+.state { padding: 28px 16px; text-align: center; color: var(--muted); }
+footer { font-size: 12px; color: var(--muted); display: grid; gap: 6px; max-width: 70ch; }
+footer a { color: var(--brass); }
+
+@media (max-width: 720px) {
+  .head { display: none; }
+  .row { grid-template-columns: minmax(0, 1fr); }
+  .name { padding: 12px 12px 4px; flex-direction: row; justify-content: flex-start; align-items: baseline; gap: 8px; }
+  .cell { border-left: 0; grid-template-columns: minmax(0, 6.2em) minmax(0, 1fr) minmax(0, 1fr); gap: 4px; padding: 3px 12px; }
+  .cell:last-child { padding-bottom: 12px; }
+  .cell .lbl { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .px { font-size: 13px; padding: 3px 4px; }
+  .na { grid-column: 2 / -1; }
+  .mobile-cols { display: grid !important; }
+}
+.mobile-cols { display: none; grid-template-columns: minmax(0, 6.2em) 1fr 1fr; gap: 4px; padding: 8px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); background: var(--panel-2); }
+.mobile-cols span:not(:first-child) { text-align: right; }
+
+@media (prefers-reduced-motion: reduce) {
+  .px, .ring .bar { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Sarrafiye <em>Canlı</em></h1>
+      <p class="sub">Üç Kapalıçarşı dövizcisinin fiyatları yan yana. Rakamlar TL, her 5 saniyede yenilenir.</p>
+    </div>
+    <div class="pulse" aria-live="polite">
+      <svg class="ring" viewBox="0 0 22 22" aria-hidden="true"><circle class="track" cx="11" cy="11" r="9"/><circle class="bar" id="ringBar" cx="11" cy="11" r="9"/></svg>
+      <span id="lastUpdate">Bağlanıyor…</span>
+    </div>
+  </header>
+
+  <div class="sources" id="sources"></div>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Ürün grubu">
+      <button id="f-all" data-f="all" aria-pressed="true">Tümü</button>
+      <button id="f-yeni" data-f="Yeni" aria-pressed="false">Yeni</button>
+      <button id="f-eski" data-f="Eski" aria-pressed="false">Eski</button>
+      <button id="f-gram" data-f="Gram" aria-pressed="false">Gram &amp; Ayar</button>
+    </div>
+    <div class="legend">
+      <span><i class="sw"></i>En düşük satış / en yüksek alış</span>
+    </div>
+  </div>
+
+  <div class="board" id="board"><div class="state">Fiyatlar yükleniyor…</div></div>
+
+  <footer>
+    <div>Alış: dövizcinin sizden aldığı fiyat (bozdurma). Satış: sizin ödeyeceğiniz fiyat. Yeşil işaret her satırda en avantajlı fiyatı gösterir.</div>
+    <div>Veriler <a href="https://www.altinkaynak.com" target="_blank" rel="noopener">altinkaynak.com</a>, <a href="https://www.hakanaltin.com" target="_blank" rel="noopener">hakanaltin.com</a> ve <a href="https://www.haremaltin.com" target="_blank" rel="noopener">haremaltin.com</a> sitelerinden alınır. Bilgi amaçlıdır, işlem fiyatı değildir.</div>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const SRC = ["ak", "hk", "hr"];
+  const GROUP_TITLE = { Gram: "Gram & Ayar", Yeni: "Yeni Sarrafiye", Eski: "Eski Sarrafiye", "Diğer": "Diğer" };
+  let interval = 5, filter = "all", last = null, prev = {}, nextAt = Date.now();
+  try { filter = localStorage.getItem("sc-filter") || "all"; } catch (e) {}
+
+  const fmt = (v) => v == null ? "—" : v.toLocaleString("tr-TR", { minimumFractionDigits: v < 100000 ? 2 : 0, maximumFractionDigits: v < 100000 ? 2 : 0 });
+  const el = (tag, cls, txt) => { const n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; };
+  const ago = (s) => s == null ? "veri yok" : s < 2 ? "şimdi" : s < 60 ? `${Math.round(s)} sn önce` : `${Math.round(s / 60)} dk önce`;
+
+  function setFilter(f) {
+    filter = f;
+    try { localStorage.setItem("sc-filter", f); } catch (e) {}
+    document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.f === f)));
+    if (last) render(last, false);
+  }
+  document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => setFilter(b.dataset.f)));
+  setFilter(filter);
+
+  function renderSources(d) {
+    const box = document.getElementById("sources");
+    box.replaceChildren();
+    for (const k of SRC) {
+      const s = d.sources[k];
+      const a = el("a", "chip " + (s.ok ? "ok" : "bad"));
+      a.href = s.url; a.target = "_blank"; a.rel = "noopener";
+      a.title = s.error ? "Son hata: " + s.error : "";
+      a.append(el("i", "dot"), el("span", null, s.name), el("small", null, s.ok ? ago(s.age) : (s.age == null ? "bağlanıyor" : "gecikmeli")));
+      box.append(a);
+    }
+  }
+
+  function priceEl(v, key, isSat, best) {
+    const p = el("span", "px" + (isSat ? " sat" : "") + (best ? " best" : ""));
+    const old = prev[key];
+    if (old != null && v != null && old !== v) {
+      const up = v > old;
+      const arr = el("span", "arr", up ? "▲" : "▼");
+      p.classList.add(up ? "flash-up" : "flash-down");
+      p.append(arr);
+      requestAnimationFrame(() => requestAnimationFrame(() => p.classList.remove("flash-up", "flash-down")));
+    }
+    p.append(document.createTextNode(fmt(v)));
+    return p;
+  }
+
+  function render(d, animate) {
+    const board = document.getElementById("board");
+    const frag = document.createDocumentFragment();
+
+    const head = el("div", "row head");
+    head.append(el("div", null, "Ürün"));
+    for (const k of SRC) {
+      const c = el("div", "src");
+      c.append(el("b", null, d.sources[k].name), el("span", null, "Alış"), el("span", null, "Satış"));
+      head.append(c);
+    }
+    frag.append(head);
+    const mc = el("div", "mobile-cols");
+    mc.append(el("span", null, "Dövizci"), el("span", null, "Alış"), el("span", null, "Satış"));
+    frag.append(mc);
+
+    const rows = d.rows.filter(r => filter === "all" || r.group === filter || (filter === "Gram" && r.group === "Gram"));
+    let group = null;
+    const next = {};
+    for (const r of rows) {
+      if (r.group !== group) { group = r.group; frag.append(el("div", "group", GROUP_TITLE[group] || group)); }
+      const vals = SRC.map(k => r.prices[k]).filter(Boolean);
+      const bestSat = vals.length > 1 ? Math.min(...vals.map(v => v.satis)) : null;
+      const bestAl = vals.length > 1 ? Math.max(...vals.map(v => v.alis)) : null;
+
+      const row = el("div", "row");
+      const nm = el("div", "name");
+      nm.append(el("b", null, r.label));
+      if (r.group === "Yeni" || r.group === "Eski") nm.append(el("small", null, r.group));
+      row.append(nm);
+      for (const k of SRC) {
+        const c = el("div", "cell");
+        c.append(el("span", "lbl", d.sources[k].name));
+        const p = r.prices[k];
+        if (!p) c.append(el("span", "na", "yok"));
+        else {
+          const ka = `${r.key}:${k}:a`, ks = `${r.key}:${k}:s`;
+          c.append(priceEl(p.alis, ka, false, p.alis === bestAl), priceEl(p.satis, ks, true, p.satis === bestSat));
+          next[ka] = p.alis; next[ks] = p.satis;
+        }
+        row.append(c);
+      }
+      frag.append(row);
+    }
+    if (!rows.length) frag.append(el("div", "state", "Bu grupta henüz fiyat yok. Kaynaklar bağlanınca burada görünecek."));
+    board.replaceChildren(frag);
+    if (animate) prev = { ...prev, ...next };
+  }
+
+  async function tick() {
+    nextAt = Date.now() + interval * 1000;
+    try {
+      const r = await fetch("/api/prices", { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const d = await r.json();
+      interval = d.interval || 5;
+      last = d;
+      renderSources(d);
+      render(d, true);
+      document.getElementById("lastUpdate").textContent = "Son güncelleme " + new Date().toLocaleTimeString("tr-TR");
+    } catch (e) {
+      document.getElementById("lastUpdate").textContent = "Sunucuya ulaşılamıyor, tekrar deneniyor";
+    }
+    setTimeout(tick, Math.max(500, nextAt - Date.now()));
+  }
+
+  const bar = document.getElementById("ringBar");
+  setInterval(() => {
+    const left = Math.max(0, nextAt - Date.now()) / (interval * 1000);
+    bar.style.strokeDashoffset = String(56.55 * (1 - left));
+  }, 200);
+
+  tick();
+})();
+</script>
+</body>
+</html>
