@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sarrafiye Canlı Yayın</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+/* Yayın modu: sabit 1920×1080 sahne, pencereye göre ölçeklenir. Sol: Yeni + Eski sarrafiye, sağ: Gram & Ayar + öne çıkanlar */
+:root {
+  --bg: #0a1711;
+  --panel: #10231a;
+  --panel-2: #0d1d15;
+  --ink: #edf2ec;
+  --muted: #8ea396;
+  --line: #1f3629;
+  --brass: #dcb45c;
+  --brass-soft: #2a2616;
+  --up: #5fd08e;
+  --up-bg: #14402a;
+  --down: #ff8a80;
+  --down-bg: #4a1c19;
+  --best: #9af0bd;
+  --best-bg: #17472f;
+  --font-display: "Bodoni Moda", "Didot", Georgia, serif;
+  --font-body: "Figtree", system-ui, "Segoe UI", sans-serif;
+  --font-num: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+body { color: var(--ink); font-family: var(--font-body); }
+
+.stage {
+  position: absolute; left: 0; top: 0; width: 1920px; height: 1080px;
+  transform-origin: 0 0; padding: 36px 40px 28px;
+  display: grid; grid-template-rows: auto 1fr auto; gap: 24px;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(220,180,92,0.10), transparent 60%),
+    var(--bg);
+}
+
+.top { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 32px; }
+.brand h1 { font-family: var(--font-display); font-weight: 700; font-size: 64px; line-height: 1; margin: 0; }
+.brand h1 em { font-style: italic; font-weight: 500; color: var(--brass); }
+.brand p { margin: 8px 0 0; color: var(--muted); font-size: 22px; }
+.clock { text-align: right; }
+.clock .t { font: 600 60px/1 var(--font-num); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.clock .d { color: var(--muted); font-size: 20px; margin-top: 6px; }
+.live { display: inline-flex; align-items: center; gap: 10px; background: #c62828; color: #fff; font: 700 18px var(--font-body); letter-spacing: 0.12em; padding: 6px 14px; border-radius: 6px; margin-bottom: 10px; }
+.live i { width: 10px; height: 10px; border-radius: 50%; background: #fff; animation: blink 1.4s infinite; }
+@keyframes blink { 50% { opacity: 0.25; } }
+
+.main { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; min-height: 0; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; }
+.panel + .panel { }
+.col { display: grid; gap: 24px; grid-auto-rows: min-content; align-content: start; min-height: 0; }
+
+.thead, .tr { display: grid; grid-template-columns: 170px repeat(3, minmax(0, 1fr)); align-items: center; }
+.thead { background: var(--panel-2); padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.thead .h { color: var(--muted); font: 600 15px var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; }
+.thead .s { text-align: center; }
+.thead .s b { display: block; color: var(--ink); font: 700 20px var(--font-body); letter-spacing: 0; text-transform: none; }
+.thead .s span { display: grid; grid-template-columns: 1fr 1fr; color: var(--muted); font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+.thead .s span em { font-style: normal; }
+.grp { background: var(--brass-soft); color: var(--brass); font: 700 16px var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; padding: 8px 16px; }
+.tr { padding: 0 16px; height: 58px; border-top: 1px solid var(--line); }
+.grp + .tr { border-top: 0; }
+.nm { font: 700 25px var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cell { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding-left: 6px; min-width: 0; border-left: 1px solid var(--line); height: 100%; align-items: center; }
+.px { font: 400 19px var(--font-num); font-variant-numeric: tabular-nums; text-align: right; padding: 4px 6px; border-radius: 7px; white-space: nowrap; transition: background-color 1.5s ease, color 1.5s ease; }
+.px.sat { font-weight: 700; }
+.px.best { background: var(--best-bg); color: var(--best); }
+.px.flash-up { background: var(--up-bg); color: var(--up); transition: none; }
+.px.flash-down { background: var(--down-bg); color: var(--down); transition: none; }
+.na { grid-column: 1 / -1; text-align: center; color: var(--muted); font-size: 18px; }
+
+.spot { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px 22px; }
+.card .k { color: var(--muted); font: 600 15px var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; }
+.card .v { font: 700 44px/1.1 var(--font-num); font-variant-numeric: tabular-nums; margin-top: 8px; color: var(--brass); }
+.card .w { font-size: 18px; margin-top: 4px; color: var(--ink); }
+.card .w small { color: var(--muted); font-size: 16px; }
+
+.foot { display: grid; grid-template-columns: auto 1fr auto; gap: 28px; align-items: center; color: var(--muted); font-size: 17px; }
+.srcs { display: flex; gap: 22px; }
+.srcs span { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
+.srcs i { width: 11px; height: 11px; border-radius: 50%; background: var(--muted); }
+.srcs .ok i { background: var(--up); box-shadow: 0 0 0 4px var(--up-bg); }
+.srcs .bad i { background: var(--down); box-shadow: 0 0 0 4px var(--down-bg); }
+.legend { display: inline-flex; align-items: center; gap: 10px; }
+.legend i { width: 16px; height: 16px; border-radius: 4px; background: var(--best-bg); border: 1px solid var(--best); }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="top">
+    <div class="brand">
+      <h1>Sarrafiye <em>Canlı</em></h1>
+      <p>Kapalıçarşı fiyatları · Altınkaynak · Hakan Altın · Harem Altın · TL</p>
+    </div>
+    <div class="clock">
+      <div class="live"><i></i>CANLI</div>
+      <div class="t" id="clock">--:--:--</div>
+      <div class="d" id="date"></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="panel" id="left"></div>
+    <div class="col">
+      <div class="panel" id="right"></div>
+      <div class="spot" id="spot"></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="srcs" id="srcs"></div>
+    <div class="legend"><i></i>En düşük satış / en yüksek alış &nbsp;·&nbsp; Alış: bozdurma, Satış: alma fiyatı</div>
+    <div id="upd">Bağlanıyor…</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const SRC = ["ak", "hk", "hr"];
+  const TITLE = { Yeni: "Yeni Sarrafiye", Eski: "Eski Sarrafiye", Gram: "Gram & Ayar", "Diğer": "Diğer" };
+  let prev = {};
+
+  const stage = document.getElementById("stage");
+  function fit() {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    stage.style.transform = `translate(${(innerWidth - 1920 * s) / 2}px, ${(innerHeight - 1080 * s) / 2}px) scale(${s})`;
+  }
+  addEventListener("resize", fit); fit();
+
+  function clock() {
+    const n = new Date();
+    document.getElementById("clock").textContent = n.toLocaleTimeString("tr-TR", { timeZone: "Europe/Istanbul" });
+    document.getElementById("date").textContent = n.toLocaleDateString("tr-TR", { timeZone: "Europe/Istanbul", weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  }
+  setInterval(clock, 1000); clock();
+
+  const fmt = (v) => v == null ? "—" : v.toLocaleString("tr-TR", { minimumFractionDigits: v < 10000 ? 2 : 0, maximumFractionDigits: v < 10000 ? 2 : 0 });
+  const LABEL = { gram: "Gram Altın", ata_y: "Ata Lira", ata_e: "Ata Lira" };
+  const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c; if (x != null) n.textContent = x; return n; };
+
+  function px(v, key, sat, best, next) {
+    const p = el("span", "px" + (sat ? " sat" : "") + (best ? " best" : ""), fmt(v));
+    const o = prev[key];
+    if (o != null && o !== v) {
+      p.classList.add(v > o ? "flash-up" : "flash-down");
+      requestAnimationFrame(() => requestAnimationFrame(() => p.classList.remove("flash-up", "flash-down")));
+    }
+    next[key] = v;
+    return p;
+  }
+
+  function table(d, groups, next) {
+    const f = document.createDocumentFragment();
+    const h = el("div", "thead");
+    h.append(el("div", "h", "Ürün"));
+    for (const k of SRC) {
+      const s = el("div", "s"); s.append(el("b", null, d.sources[k].name));
+      const sp = el("span"); sp.append(el("em", null, "Alış"), el("em", null, "Satış")); s.append(sp);
+      h.append(s);
+    }
+    f.append(h);
+    for (const g of groups) {
+      const rows = d.rows.filter(r => r.group === g);
+      if (!rows.length) continue;
+      f.append(el("div", "grp", TITLE[g]));
+      for (const r of rows) {
+        const vals = SRC.map(k => r.prices[k]).filter(Boolean);
+        const bs = vals.length > 1 ? Math.min(...vals.map(v => v.satis)) : null;
+        const ba = vals.length > 1 ? Math.max(...vals.map(v => v.alis)) : null;
+        const tr = el("div", "tr");
+        tr.append(el("div", "nm", LABEL[r.key] || r.label));
+        for (const k of SRC) {
+          const c = el("div", "cell"), p = r.prices[k];
+          if (!p) c.append(el("span", "na", "—"));
+          else c.append(px(p.alis, `${r.key}:${k}:a`, false, p.alis === ba, next), px(p.satis, `${r.key}:${k}:s`, true, p.satis === bs, next));
+          tr.append(c);
+        }
+        f.append(tr);
+      }
+    }
+    return f;
+  }
+
+  function spot(d) {
+    const box = document.getElementById("spot"); box.replaceChildren();
+    for (const [key, title] of [["ceyrek_y", "En ucuz çeyrek"], ["gram", "En ucuz gram altın"]]) {
+      const r = d.rows.find(x => x.key === key);
+      const c = el("div", "card");
+      c.append(el("div", "k", title));
+      if (r) {
+        let best = null;
+        for (const k of SRC) if (r.prices[k] && (!best || r.prices[k].satis < best.v)) best = { v: r.prices[k].satis, k };
+        c.append(el("div", "v", best ? fmt(best.v) + " ₺" : "—"));
+        const w = el("div", "w", best ? d.sources[best.k].name : ""); c.append(w);
+      }
+      box.append(c);
+    }
+  }
+
+  async function tick() {
+    const next = {};
+    try {
+      const r = await fetch("/api/prices", { cache: "no-store" });
+      const d = await r.json();
+      document.getElementById("left").replaceChildren(table(d, ["Yeni", "Eski"], next));
+      document.getElementById("right").replaceChildren(table(d, ["Gram", "Diğer"], next));
+      spot(d);
+      const s = document.getElementById("srcs"); s.replaceChildren();
+      for (const k of SRC) { const x = el("span", d.sources[k].ok ? "ok" : "bad"); x.append(el("i"), document.createTextNode(d.sources[k].name)); s.append(x); }
+      document.getElementById("upd").textContent = "Son güncelleme " + new Date().toLocaleTimeString("tr-TR", { timeZone: "Europe/Istanbul" }) + " · 5 sn'de bir yenilenir";
+      prev = { ...prev, ...next };
+    } catch (e) {
+      document.getElementById("upd").textContent = "Veri bekleniyor…";
+    }
+    setTimeout(tick, 5000);
+  }
+  tick();
+})();
+</script>
+</body>
+</html>

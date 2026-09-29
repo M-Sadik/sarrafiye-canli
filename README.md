@@ -29,3 +29,13 @@ Sunucu bu kaynakları arka planda çeker, sayfa `/api/prices` uç noktasını 5 
 3. Verilen `https://sarrafiye-canli-xxxx.onrender.com` linkini paylaşın.
 
 Not: Ücretsiz planda 15 dakika kimse girmezse uygulama uyur; ilk açılış ~30-50 sn sürebilir.
+
+## YouTube canlı yayın (OBS)
+
+Yayın için hazırlanmış 1920×1080 ekran: `http://localhost:8000/yayin.html`
+
+1. `baslat.bat` ile sunucuyu açın (çökerse kendini yeniden başlatır).
+2. OBS → Kaynaklar → + → **Tarayıcı**: URL `http://localhost:8000/yayin.html`, Genişlik 1920, Yükseklik 1080.
+3. OBS → Ayarlar → Video: 1920×1080, 30 FPS. Çıkış: bit hızı ~3000 Kbps.
+4. OBS → Ayarlar → Yayın: Hizmet YouTube, "Hesabı bağla" ya da YouTube Studio'daki yayın anahtarı.
+5. Yayını Başlat.
